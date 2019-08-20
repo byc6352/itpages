@@ -1,0 +1,142 @@
+@charset "utf-8";
+html, body 
+	{
+		background-color:#f7f6f2;height:100%;color:#333;
+		font-family: "PingFang SC","Helvetica Neue",Helvetica,Arial,"Hiragino Sans GB","Microsoft Yahei","微软雅黑",STHeiti,"华文细黑",sans-serif;
+	}
+.container_index
+	{
+		position:absolute;top:50px;left:0;right:0;bottom:0;border-top:1px solid #888;overflow-x:hidden;overflow-y:auto;
+	}
+.developer_body
+	{
+		position:relative;margin:0 auto;width:1366px;height:auto;overflow:hidden;min-height:100%;border-left:1px solid #888;
+	}
+.developer_body:after 
+	{
+		content:'';position:absolute;top:0px;left:343px;width:1px;height:100%;border-left:1px solid #888;
+	}	
+.developer_left
+	{
+		position:fixed ;top:50px;left:50%;margin-left:-675px;width:320px;height:100%;overflow:auto;
+	}
+.developer_left_title
+	{
+		position:relative;width:320px;height:154px;	
+	}
+.developer_left_a
+	{
+		position:absolute;left:25px;top:50px;width:280px;height:54px;text-decoration:none;border-bottom:1px solid #ddd;
+	}
+.developer_left_a:after 
+	{
+		content:'';position:absolute;top:7px;left:25px;width:40px;height:40px;background-position:0px;background-size:40px;background-repeat:no-repeat;background-image:url("../images/huizong.png");
+	}
+.developer_left_span_a
+	{
+		position:absolute;left:80px;top:0;width:200px;height:30px;line-height:42px;font-size:22px;color:#000;
+	}
+.developer_left_span_b
+	{
+		position:absolute;left:80px;top:30px;width:200px;height:30px;line-height:30px;font-size:14px;color:#000;letter-spacing:2px;
+	}
+.developer_left_con_body
+	{
+		position:absolute;top:154px;left:0;right:0;bottom:70px;
+	}	
+.developer_left_con
+	{
+		position:relative;width:320px;height:100%;	
+	}
+.developer_left_con ul
+	{
+		position:relative;margin:0;padding:0;
+	}	
+.developer_left_con ul li
+	{
+		margin:0 auto;width:280px;height:50px;border-bottom:1px solid #ddd;list-style-type:none;position:relative;cursor:pointer;
+	}
+.developer_left_con_li_a:after 
+	{
+		content:'';position:absolute;top:22px;right:5px;width:5px;height:12px;background-position:0px;background-size:5px 12px;background-repeat:no-repeat;background-image:url("../images/right.png");
+	}
+.developer_left_con_li_b:after 
+	{
+		content:'';position:absolute;top:22px;right:5px;width:12px;height:12px;background-position:0px;background-size:12px 5px;background-repeat:no-repeat;background-image:url("../images/bottom.png");
+	}
+.developer_left_con_div
+	{
+		position:relative;
+	}	
+.developer_left_con_span
+	{
+		position:absolute;left:60px;top:0;height:50px;line-height:50px;font-size:18px;
+	}
+.developer_left_none
+	{
+		width:328px;height:auto;z-index:9999;background-color:#fff;
+	}
+.developer_left_none_off
+	{
+		display:none;
+	}	
+.developer_left_none ul
+	{
+		position:relative;margin:0;padding:0;
+	}
+.developer_left_none ul li
+	{
+		margin:0 auto;width:180px;height:50px;line-height:50px;border-bottom:1px solid #ddd;list-style-type:none;
+	}
+.developer_left_none ul li a
+	{
+		font-size:16px;color:#888;padding-left:10px;
+	}	
+.developer_right
+	{
+		position:relative;float:right;width:1035px;height:auto;padding-left:35px;
+	}	
+.developer_right_title
+	{
+		position:relative;width:1000px;height:154px;
+	}
+.developer_right_span
+	{
+		position:absolute;left:0px;top:50px;width:1000px;height:54px;text-decoration:none;line-height:54px;border-bottom:1px solid #ddd;font-size:20px;
+	}
+.developer_right_con
+	{
+		position:relative;width:1000px;height:auto;line-height:40px;
+	}
+.developer_right_con img
+	{
+		width:100%;height:100%;
+	}	
+.developer_right_con_div
+	{
+		position:relative;width:100%;border-bottom:1px solid #ddd;padding:30px 0;
+	}
+.developer_right_con_a
+	{
+		 color:#337ab7;
+	}
+.developer_text_right
+	{
+		text-align:right;
+	}
+.developer_text_center
+	{
+		text-align:left;height:40px;line-height:40px;font-size:18px;overflow:hidden;text-overflow:ellipsis;
+	}	
+.developer_yuan
+	{
+		position:absolute;top:0;right:40px;width:10px;height:10px;border-radius:10px;background-color:#ff0000;
+	}
+.nav_fixed
+	{
+		position:fixed;top:0;left:50%;margin-left:-682px;
+	}
+.developer_right_con_div > a
+	{
+		color:#007aff;
+	}	

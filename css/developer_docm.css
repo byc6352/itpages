@@ -1,0 +1,65 @@
+﻿/* 开发者中心(本样式只适用于开发者中心)  */
+.index_c_de{margin-top:50px;min-width:1000px;}
+.developer_fluid{padding:0px;color:#333;}
+.devo_left{width:280px;float:right;margin-top:10px;}
+.devo_left .help_left_new_de{font-size:15px;}
+.devo_left a{text-decoration:none;}
+.devo_left .help_left_new_de p{ padding-left:30px;margin:0px;line-height:35px;color:#332f2f;}
+.devo_left .help_left_new_de p:hover{background-color:#ccc;color:#333;}
+.devo_left_title{padding:0px;border-bottom:solid #ccc 1px;}
+.devo_left_title .devo_left_title_f{width:280px;float:right;font-size:22px;padding-top:60px;}
+.devo_left_title .devo_left_title_f span{font-size:16px;padding-left:10px;}
+.devo_left i{padding-right:10px;}
+.devo_left .devo_left_h5_de h5{line-height:40px;cursor:pointer;font-size:17px;}
+.devo_left .devo_left_h5_de img{width:20px;height:23px;margin-right:10px;}
+.devo_right{border-left:solid #ccc 1px;padding:0px;}
+.devo_right .devo_right_pa{padding-left:40px;margin:10px 0px;}
+.devo_right_pa img{width:100%;margin-bottom:5px;}
+.devo_right_pa p{line-height:25px;color:#666;}
+.devo_right_pa h4{font-size:16px;color:#000;font-weight:bold;}
+.devo_right_pa .re_img{border:solid #ccc 1px;}
+.devo_left_title .devo_r_font{float:left;padding-left:40px;}
+.devo_right_pa .de_font_red,.devo_right_pa .font_red_de{color:red;}
+.devo_right_pa .font_blue_de{color:blue;padding:0px;}
+.devo_right_pa .panel-body {color:#000;line-height:30px;}
+.devo_right_pa .devo_shujubiaoq{width:100px;padding:0px;}
+/*接口*/
+
+.devo_jiekou,.devo_jiekou .post_de{padding:0px;}
+.devo_right_pa .createdevice_post{border:solid #1a1818 1px;cursor:pointer;}/* 黑 createdevice_post */
+.createdevice_post_cen{border:solid #888 1px;border-top:none;padding:10px 20px;width:100%;}
+
+
+.createdevice_get_cen{border:solid #ff9d34 1px;border-top:none;padding:10px 20px;}
+.devo_right_pa .createdevice_get{border:solid #ff9d34 1px;cursor:pointer;}/* 黄 createdevice_get */
+.devo_right_pa .createdevice_post,
+.devo_right_pa .createdevice_get{line-height:40px;font-size:14px;margin-top:10px;min-width:900px;}
+.createdevice_post_cen,.createdevice_get_cen{min-width:900px;}
+
+.devo_right_pa .createdevice_post .colorone,
+.devo_right_pa .createdevice_get .colorone{float:left;margin:0px;line-height:40px;color:#fff;
+                           margin-right:10px;font-weight:400; width:70px;text-align:center;}
+.devo_right_pa .createdevice_post .colorone{ background-color:rgb(93, 93, 93);}
+.devo_right_pa .createdevice_get .colorone{ background-color:rgb(255, 157, 52);}
+
+.createdevice_post .pull-right,
+.createdevice_get .pull-right{padding-right:15px;font-size:13px;}
+
+.devo_right_pa .createdevice_post .url_edit{float:left;}
+.http_font_three_de{width:80px;padding:0px;line-height:35px;}
+.userFeed_btn_de .http_font_six_de{ background-color:#000;color:#fff;border-radius:15px;
+                padding:5px 20px;margin:10px 0px 10px 80px;
+}
+.devo_right_pa #d_clip_button{background-color:rgb(168, 168, 166);color:#fff;margin:5px 0px;border:none;}
+.de_line_height{line-height:30px;}
+
+ .helpF{color:rgb(102, 102, 102);font-size:16px;line-height:30px;border:none;width:100%;
+       font-family:"Microsoft YaHei";background-color:rgb(247, 246, 242);min-width:760px;}
+       .helpF b{font-weight:bold;color:#000;margin:0;padding:0;line-height:35px;}
+       .helpF img{width:97%;margin:0;}
+       .helpF .boImg{border:solid #ddd 1px;}
+       .helpF .tabBo{border:solid #888 1px;padding:5px 0px 5px 8px ;border-bottom:none;}
+.helpF .redFont{color:red;}
+.helpF .infoTile{color:#000;text-align:center;}
+.helpF .info{color:#000;}
+

@@ -1,0 +1,2763 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>TLINK物联网-帮助中心-API开放接口</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+   <meta name="Keywords" content=""/>
+	<meta name="Description" content="" />
+	<meta http-equiv="pragma" content="no-cache">	
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">   
+	
+
+
+
+
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<link rel="icon" href="/images/favicon.ico">
+<script src="/js/jquery-1.11.2.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="/css/jquery.datetimepicker.css">
+<link rel="stylesheet" type="text/css" href="/css/myIndex.css">
+<link rel="stylesheet" type="text/css" href="/css/style.min.css">
+<script type="text/javascript" src="/js/jquery-form.js"></script>
+<script type="text/javascript" src="/js/navbar.js"></script>
+<script type="text/javascript" src="/js/jquery.datetimepicker.js"></script>
+<script type="text/javascript" src="/js/address.js"></script>
+
+<link rel="stylesheet" href="/css/new/jquery.bxslider.css">
+<link rel="stylesheet" href="/css/new/index.css">
+<script src="/js/new/index.js"></script>
+<!-- 国内使用 -->
+<script charset="utf-8" src="https://g.alicdn.com/sd/ncpc/nc.js?t=0.4834237753420857"></script>
+<!-- 若您的主要用户来源于海外，请替换使用下面的js资源 -->
+<!-- <script type="text/javascript" charset="utf-8" src="http://aeis.alicdn.com/sd/ncpc/nc.js?t=2015052012"></script> -->
+
+<input type="hidden" id="basePath" name="basePath" value="">
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?cab9d2db73648c24a142c1d8df07c285";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+//邮箱正则
+function regEmail(email){
+	var regEmail=/^([a-zA-Z0-9.]*[-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\\.][A-Za-z]{2,3}([\\.][A-Za-z]{2})?$/;
+	return regEmail.test(email)?true:false;
+}
+//手机号正则
+function regMobile(mobile){
+	var regMobile = /^1(3|4|5|7|8|9)\d{9}$/;	//手机号码格式：1开头接着3或4或5或7或8接着9位
+	return regMobile.test(mobile)?true:false;
+}
+//电话正则
+function regPhone(phone){
+	 var regPhone = /^0(([1,2]\d)|([3-9]\d{2}))\d{7,8}$/;	//匹配固定电话 0开头接着非1或2接着数字两位接着7位或8位数字
+	 return regPhone.test(phone)?true:false;
+}
+//中文姓名正则
+function regChineseName(name){
+	var regName = /^[\u4E00-\u9FA5]{2,4}$/;
+	return regName.test(name)?true:false;
+}
+//中英文姓名正则
+function regCnEnName(name){
+	var regName = /^[\u4E00-\u9FA5a-zA-Z.●]+$/;	//匹配中文，英文字母及.●
+	return regName.test(name)?true:false;
+}
+//纯数字正则
+function regNumber(name){
+	var regName = /^[0-9]+$/;
+	return regName.test(name)?true:false;
+}
+//字母正则
+function regLetter(name){
+	var regName = /^[A-Za-z]+$/;
+	return regName.test(name)?true:false;
+}
+//是否为纯数字加字母
+function isNumberAndLetter(str){
+	var numberCount=0,letterCount=0,otherCount=0;
+	for(var i=0;i<str.length;i++){
+		if(regNumber(str[i])){
+			numberCount++;
+		}else if(regLetter(str[i])){
+			letterCount++;
+		}else{
+			otherCount++;
+		}
+	}
+	if(numberCount>0&&letterCount>0&&otherCount>=0){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+/*jquery 限制文本框不能输入反斜杠*/  
+function fanXieGangLimit(obj){
+   	$(obj).keyup(function(){    
+         $(this).val($(this).val().replace(/[/]/g,''));  
+     }).bind("paste",function(){  //CTR+V事件处理    
+         $(this).val($(this).val().replace(/[/]/g,''));     
+     }).css("ime-mode", "disabled"); //CSS设置输入法不可用
+}
+
+/*jquery 限制文本框不能输入汉字*/  
+function chineseLimit(obj){
+   	$(obj).keyup(function(){    
+         $(this).val($(this).val().replace(/[\u4E00-\u9FA5]/g,''));  
+     }).bind("paste",function(){  //CTR+V事件处理    
+         $(this).val($(this).val().replace(/[\u4E00-\u9FA5]/g,''));     
+     }).css("ime-mode", "disabled"); //CSS设置输入法不可用
+}
+
+/************图片裁剪********************/
+var initCropperInModal = function(img, input,width,height){
+    // 初始化
+    var $image = $(img);
+    // 上传图片
+   	var $inputImage = $(input);
+   	var options = {
+        aspectRatio: width/height,	//纵横比
+        autoCropArea:1,
+        background:true,	//是否显示背景的黑白方格（类似PS里透明图层的显示方式）
+        modal:true,	//非裁剪区域是否用黑罩遮盖。
+        preview: '.up-pre-after',	// 预览图的class名
+    }
+    $image.cropper(options);
+    var URL = window.URL || window.webkitURL;
+    var blobURL;
+    if (URL) {
+        $inputImage.change(function () {
+            var files = this.files;
+            var file;
+			if (!$image.data('cropper')) {
+                return;
+            }
+            if (files && files.length) {
+               file = files[0];
+               // 判断是否是图像文件
+               if (/^image\/\w+$/.test(file.type)) {
+               		//如果URL已存在就先释放
+               		if(blobURL) {
+                        URL.revokeObjectURL(blobURL);
+                    }
+                    blobURL = URL.createObjectURL(file);
+                    // 重置cropper
+                    $image.cropper('reset').cropper('replace', blobURL);
+                    $inputImage.val('');
+                } else {
+                    window.alert('请选择一张图片');
+                }
+            }
+        });
+    } else {
+        $inputImage.prop('disabled', true);
+    }
+ 
+ }
+
+//向右旋转
+function rotateimgright(obj) {
+	if($(obj).attr("src")!=null&&$.trim($(obj).attr("src"))!=""){
+		$(obj).cropper('rotate', 90);
+	}
+}
+
+//向左旋转
+function rotateimgleft(obj) {
+	if($(obj).attr("src")!=null&&$.trim($(obj).attr("src"))!=""){
+		$(obj).cropper('rotate', -90);
+	}
+}
+</script>     
+	<link rel="stylesheet" type="text/css" href="/css/developer.css">
+	<link rel="stylesheet" type="text/css" href="/css/developer_docm.css">
+	<script src="/js/index.js"></script>	
+	<style>
+	.developer_right_con h4{
+		font-size: 16px;
+	    color: #000;
+	    font-weight: bold;
+	 }
+	</style>
+</head>
+<body onload="onLocationClick(0)">
+   <!--头部-->
+      
+
+
+
+<input type="hidden" id="userId" value="">
+<a href="" id="queryEmail" target="_blank"></a>
+<div class="pc-nav pc-nav-fixed">
+	<a href="/index.htm" class="pc-new-logo">
+		<img src="/images/new/logo.svg" alt="Tlink工业物联网平台，提供端管云一体化的物联网产品和解决方案。" title="Tlink工业物联网平台，提供端管云一体化的物联网产品和解决方案。" />
+	</a>
+	<ul class="pc-ul L ul-l">
+		<a href="/index.htm" class="pc-a">
+			首页
+		</a>
+		<a href="/yunApp.htm" class="pc-a">
+			云组态
+		</a>
+
+<!-- 			设备探索 -->
+<!-- 		</a> -->
+		<a href="/help.htm" class="pc-a">
+			帮助中心
+		</a>
+
+<!-- 			信息反馈 -->
+<!-- 		</a> -->
+		<a href="http://qy.tlink.io" target="_blank" class="pc-a">
+			企业版
+		</a>
+	</ul>
+	<ul class="pc-ul R">
+	  	
+		<div class="ul-line">
+		&nbsp;
+		</div>
+		<!-- 登录前-->
+		
+			<a href="javascript:;" class="pc-user" data-toggle="modal" data-target="#user">
+				登录
+			</a>
+			<a href="javascript:;" class="pc-register" data-toggle="modal" data-target="#register">
+				注册
+			</a>
+		
+		<!-- 登录后-->
+		
+		<div class="ul-line">
+		&nbsp;
+		</div>
+		<div href="#" class="pc-language down">
+			中文/EN
+			<div class="pc-language-none down-none">
+				<a href="/changeLanguage.htm?language=cn" class="pc-language-a pc-language-b">
+					<div class="pc-language-img">
+						<img src="/images/new/chaina_img.png" />
+					</div>
+					<div class="pc-language-txt">
+						简体中文
+					</div>
+				</a>
+				<a href="/changeLanguage.htm?language=en" class="pc-language-a">
+					<div class="pc-language-img">
+						<img src="/images/new/America_img.png" />
+					</div>
+					<div class="pc-language-txt">
+						English
+					</div>
+				</a>
+			</div>
+		</div>
+	</ul>
+</div>
+<!-- 登录 -->
+<div class="modal fade" id="user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog pc-dialog" role="document">
+		<div class="modal-content pc-content">
+			<div class="user-header">
+				<a href="javascript:;" class="user-header-a user-header-b">
+					账号登录
+				</a>
+			</div>
+			<div class="pc-modal-body">
+				<div class="pc-modal-list">
+					<i class="login-user">
+						<img src="/images/new/login-user.png" />
+					</i>
+					<input type="text" class="login_input" placeholder="请输入用户名/邮箱" id="loginName"/>
+				</div>
+				<div class="pc-modal-list">
+					<i class="login-user">
+						<img src="/images/new/password.png" />
+					</i>
+					<input type="password" class="login_input" placeholder="请输入密码" id="pass"/>
+				</div>
+				<div class="pc-modal-itme">
+					<div class="pc-modal-left">
+						<input type="checkbox" value="" class="pc-modal-check" id="demoDengLu"/>
+						演示账号登录
+					</div>
+					<a href="/find_pwd_1.htm" class="pc-modal-right">
+						忘记密码？
+					</a>
+				</div>
+				<div class="pc-modal-itme">
+					<a href="javascript:;" class="pc-modal-denglu" id="denglu">
+						登录
+					</a>
+				</div>
+				<div class="pc-modal-list">
+					合作账号登录：
+					<a href="/union/qqLogin.htm" class="pc-modal-ico">
+						<img src="/images/new/qq.png" />
+					</a>
+					<a href="http://open.weixin.qq.com/connect/qrconnect?appid=wxc855f4c4e69f7ae5&redirect_uri=https://www.tlink.io/union/wxLogin.htm&response_type=code&scope=snsapi_login&state=t#wechat_redirect" class="pc-modal-ico">
+						<img src="/images/new/weixin.png" />
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 注册 -->
+<div class="modal fade" id="register" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog pc-dialog" role="document">
+		<div class="modal-content pc-content">
+			<div class="user-header">
+				<a href="#tab5" id="mobileFlag" class="user-header-a tab-a tab-b user-header-c reg-switch">
+					手机注册
+				</a>
+				<a href="#tab6" id="emailFlag" class="user-header-a tab-a user-header-c reg-switch">
+					邮箱注册
+				</a>
+			</div>
+			<div class="pc-modal-body">
+				<input type="hidden" id="regFlag" value="mobileFlag">
+				<div class="tab-list tab-itme" id="tab5">
+					<div class="pc-modal-list">
+						<input type="text" class="register_input" placeholder="请输入手机号" id="mobile"/>
+					</div>
+					<div class="pc-modal-list nc-container" id="sliderNav">
+						
+					</div>
+					<div class="pc-modal-list">
+						<input type="text" class="register_yz" placeholder="请输入验证码" id="mobileCode" name="mobileCode"/>
+						<a href="javascript:;" class="register_hq" id="mbtn">
+							获取手机验证码
+						</a>
+					</div>
+					<div class="pc-modal-list">
+						<input type="password" class="register_input" placeholder="请输入密码" id="mobilePwd" name="mobilePwd"/>
+					</div>
+					<div class="pc-modal-list">
+						<input type="password" class="register_input" placeholder="请再次输入密码" id="mobileAgainPwd" name="mobileAgainPwd"/>
+					</div>
+					<div class="pc-modal-list">
+						<a href="javascript:;" class="pc-modal-denglu pc-user-reg">
+							注册
+						</a>
+					</div>
+				</div>
+				<div class="tab-list" id="tab6">
+					<div class="pc-modal-list">
+						<input type="text" class="register_input" placeholder="请输入邮箱" id="email"/>
+					</div>
+					<div class="pc-modal-list">
+						<input type="text" class="register_yz" placeholder="请输入验证码" id="emailCode" name="emailCode"/>
+						<a href="javascript:;" class="register_hq" id="ebtn">
+							获取邮箱验证码
+						</a>
+					</div>
+					<div class="pc-modal-list">
+						<input type="password" class="register_input" placeholder="请输入密码" id="emailPwd" name="emailPwd"/>
+					</div>
+					<div class="pc-modal-list">
+						<input type="password" class="register_input" placeholder="请再次输入密码" id="emailAgainPwd" name="emailAgainPwd"/>
+					</div>
+					<div class="pc-modal-list">
+						<a href="javascript:;" class="pc-modal-denglu pc-user-reg">
+							注册
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 客服 -->
+		<div class="z-kefu">
+			<a href="javascript:;" class="z-kefu-popu">
+				联<br />
+				系<br />
+				我<br />
+				们<br />
+				<<br />
+			</a>
+			<div class="z-kefu-qq">
+				<div class="z-kefu-qq-title">
+					硬件咨询
+				</div>
+				<div class="z-kefu-con">
+					<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=476252756&amp;site=qq&amp;menu=yes" alt="点击这里给我发消息" title="点击这里给我发消息" class="z-qq-a">
+						<div class="z-qq-img">
+							<img src="/images/new/qq.png">
+						</div>
+						技术支持
+					</a>
+				</div>
+				<div class="z-kefu-qq-title">
+					平台咨询
+				</div>
+				<div class="z-kefu-con">
+					<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=476252756&amp;site=qq&amp;menu=yes" alt="点击这里给我发消息" title="点击这里给我发消息" class="z-qq-a">
+						<div class="z-qq-img">
+							<img src="/images/new/qq.png">
+						</div>
+						技术支持
+					</a>
+				</div>
+				<div class="z-kefu-qq-title">
+					关注微信
+				</div>
+				<div class="z-kefu-con">
+					<div class="z-kefu-erweima" style="cursor:pointer;" onclick="javascript:window.location.href='/wechat_alarm.htm?menu=触发器'">
+						<img src="/images/new/weixin.jpg">
+					</div>
+				</div>
+				<div class="z-kefu-qq-title">
+					联系电话
+				</div>
+				<div class="z-kefu-con">
+					<a target="_blank" href="javascript:;" class="z-qq-a">
+						<div class="z-qq-img">
+							<img src="/images/new/phone.png">
+						</div>
+						0755-23329978
+					</a>
+				</div>
+			</div>
+		</div>
+<script type="text/javascript">
+       
+       function checkForm(){
+       		var reg = $("#reg").val();
+       		if(reg == '1'){
+       			var Password_2 = $("#Password1").val();
+       			var ConfirmPassword_2 = $("#ConfirmPassword1").val();
+       			var mobile = $("#mobile").val();
+       			var mobilecode = $("#mobilecode").val();
+       			if("" == mobile){
+       			   alert("请输入手机号码！");
+       			   return false;
+       			}
+       			if("" == mobilecode){
+       			   alert("请输入手机验证码！");
+       			   return false;
+       			}
+       			if("" == Password_2){
+       			  alert("请输入密码！");
+       			  return false;
+       			}
+       			if("" == ConfirmPassword_2){
+       			  alert("请再次输入密码！");
+       			  return false;
+       			}
+       			if(Password_2!=ConfirmPassword_2){
+       				alert("两次密码输入不一致");
+       				return false
+       			}
+       		}else{
+       			var Password_1 = $("#Password_2").val();
+       			var ConfirmPassword_1 = $("#ConfirmPassword_2").val();
+       			var email = $("#email").val();
+       			var emailcode = $("#emailcode").val();
+       			if("" == email){
+       			   alert("请输入邮箱！");
+       			   return false;
+       			}
+       			if("" == emailcode){
+       			   alert("请输入邮箱验证码！");
+       			   return false;
+       			}
+       			if("" == Password_1){
+       			  alert("请输入密码！");
+       			  return false;
+       			}
+       			if("" == ConfirmPassword_1){
+       			  alert("请再次输入密码！");
+       			  return false;
+       			}
+       			if(Password_1!=ConfirmPassword_1){
+       				alert("两次密码输入不一致");
+       				return false
+       			}
+       		}
+       	    $.ajax({
+	           type: "POST",
+	           dataType: "html",
+	           url: "/user/registe.htm",
+	           data: $('#regForm').serialize(),
+	           success: function (data) {
+	               var jsonObj = $.parseJSON(data);
+				   if ('00' == jsonObj.flag) {
+				      window.location.href = jsonObj.url;
+				   }else{
+				      alert(jsonObj.msg);
+				   }
+	            }, error: function(data) {
+	               alert("error:" + data.responseText);
+	            }
+           });
+       	   //$("#regForm").submit();
+       }
+
+</script>
+
+<script type="text/javascript" src="//s.union.360.cn/203543.js" async defer></script>   
+        <div class="container_index">
+		  <div class="developer_body">
+         <!--左边部分-->
+             
+	<link rel="stylesheet" type="text/css" href="/css/jquery.mCustomScrollbar.css">	
+	<script src="/js/jquery.mCustomScrollbar.concat.min.js"></script>	
+ 	<style type="text/css">
+ 		.developer_left_none a{display:block;}
+	</style>
+	<script type="text/javascript">
+		$(function(){
+			$('.developer_left_span_a').mouseover(function(){
+				$(this).css("color","#007aff");
+			});
+			$('.developer_left_span_a').mouseout(function(){
+				$(this).css("color","#333");
+			});
+		});
+	</script>
+ 
+       <div class="developer_left">
+		<div class="developer_left_title">
+			<a href="/web/help.htm?menu=" class="developer_left_a">
+				<span class="developer_left_span_a">
+                                         开发者中心
+				</span>
+				<span class="developer_left_span_b">
+					Developer&nbsp;&nbsp;Center
+				</span>
+			</a>
+		</div>
+		<div class="developer_left_con_body">
+		  <div class="developer_left_con">
+			<ul>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">快速开始</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/web/link-register.htm?menu=">
+									注册
+								</a>	
+							</li>
+							<li>
+								<a href="/web/create-device.htm?menu=">
+									创建设备
+								</a>
+							</li>
+							<li>
+								<a href="/web/link-device.htm?menu=">
+									快速连接
+								</a>
+							</li>
+							<li>
+								<a href="/case/add_trigger.htm?menu=">
+									添加触发器
+								</a>
+							</li>
+							<li>
+								<a href="/case/re_application.htm?menu=">
+									发布应用
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li  developer_left_con_li_a">
+						<span class="developer_left_con_span">API开放接口</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/web/developer-documentation-all.htm?type=1&menu=">
+									设备接口
+								</a>	
+							</li>
+							<li>
+								<a href="/web/developer-documentation-all.htm?type=2&menu=">
+									触发器接口
+								</a>
+							</li>
+							<li>
+								<a href="/web/developer-documentation-all.htm?type=3&menu=">
+									用户接口
+								</a>
+							</li>
+							<li>
+								<a href="/web/developer-documentation-all.htm?type=4&menu=">
+									API在线测试
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">TCP开放接口</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/case/http_text.htm?menu=">
+									TCP连接说明
+								</a>	
+							</li>
+							<li>
+								<a href="/case/talkLabel.htm?menu=">
+									TCP协议标签
+								</a>
+							</li>							
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">UDP连接接口</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/case/udpLink.htm?menu=">
+									UDP连接说明
+								</a>	
+							</li>							
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">TP500连接接口</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/case/tp500Link.htm?menu=">
+									TP500连接说明
+								</a>	
+							</li>							
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">MQTT连接接口</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/case/mqttLink.htm?menu=">
+									MQTT连接说明
+								</a>	
+							</li>
+							
+							<!--<li>
+								<a href="/case/mqttMess.htm">
+									MQTT连接说明
+								</a>	
+							</li>
+						  	<li>
+								<a href="/case/mqttSubscriber.htm?menu=">
+									MQTT订阅
+								</a>
+							</li>
+							<li>
+								<a href="/case/mqttRelease.htm?menu=">
+									MQTT发布
+								</a>
+							</li>
+							<li>
+								<a href="/case/mqttTest.htm?menu=">
+									MQTT测试
+								</a>
+							</li>-->							
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">Modbus连接接口</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/case/help-modbus.htm?menu=">
+									Modbus连接说明
+								</a>	
+							</li>
+							<li>
+								<a href="/case/help-modbus-cmd.htm?menu=" title="Modbus读写指令与组态王设置对比">
+									Modbus读写指令...
+								</a>
+							</li>	
+							<li>
+								<a href="/case/help-modbus-link.htm?menu=">
+									Modbus连接示例
+								</a>	
+							</li>											
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">网关连接案例</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/web/toprie-dtu.htm?menu=">
+									拓普瑞DTU
+								</a>	
+							</li>
+							<li>
+								<a href="/web/sixin-dtu.htm?menu=">
+									四信DTU
+								</a>
+							</li>
+							<li>
+								<a href="/web/youren-dtu.htm?menu=">
+									有人DTU
+								</a>
+							</li>	
+							<li>
+								<a href="/case/hongdian-dtu.htm?menu=">
+									宏电DTU
+								</a>
+							</li>	
+							<li>
+								<a href="/case/baima-dtu.htm?menu=">
+									佰马DTU
+								</a>
+							</li>	
+							<li>
+								<a href="/case/tashi-dtu.htm?menu=">
+									塔石DTU
+								</a>
+							</li>						
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">设备连接案例</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/case/gatewayCon.htm?menu=">
+									采集卡
+								</a>
+							</li>
+
+							<li>
+
+								<a href="/case/gatewayCon-HMI.htm?menu=">
+									HMI触摸屏
+								</a>
+							</li>
+							<li>
+
+								<a href="/case/gatewayCon-wlt.htm?menu=">
+									威纶通触摸屏
+								</a>
+							</li>
+							<li>
+								<a href="/case/mcgs.htm?menu=">
+									昆仑通态触摸屏
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">PLC连接案例</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+
+								<a href="/case/plc_link.htm?menu=">
+									三菱PLC
+								</a>
+							</li>
+							<li>
+								<a href="/case/gatewayCon-PLC.htm?menu=">
+									汇川PLC
+								</a>
+							</li>
+							<li>
+								<a href="/case/gatewayCon-hcPLC.htm?menu=">
+									西门子PLC
+								</a>
+							</li>
+							<!--  <li>
+								<a href="/case/dfrobot_one.htm">
+
+								<a href="/case/dfrobot_one.htm?menu=">
+
+									Dfrobot-LM35发送
+								</a>
+							</li>
+							<li>
+								<a href="/case/dfrobot_two.htm?menu=">
+									Dfrobot-短信发送
+								</a>
+							</li>
+							<li>
+								<a href="/case/dfrobot_three.htm?menu=">
+									Dfrobot-MQTT发送
+								</a>
+							</li>
+							<li>
+								<a href="/case/microduino.htm?menu=">
+									美科-MQTT发送
+								</a>
+							</li>	-->										
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">传感器连接案例</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							
+
+
+
+
+
+							<li>
+								<a href="/case/wy.htm?menu=">
+									位移远程监控
+								</a>
+							</li>
+							<li>
+								<a href="/case/ruike.htm?menu=">
+									无线压力变送器
+								</a>
+							</li>
+
+
+
+
+
+						</ul>
+					</div>
+				</div>
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">摄像头连接案例</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/case/haikang.htm?menu=">
+									海康摄像头
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<div class="developer_left_con_div">
+					<li class="developer_left_con_li developer_left_con_li_a">
+						<span class="developer_left_con_span">PLC远程更新程序</span>
+					</li>
+					<div class="developer_left_none developer_left_none_off">
+						<ul>
+							<li>
+								<a href="/software/plc-1.htm?menu=">
+									TCP转发软件
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</ul>
+		</div>
+	</div>
+</div>
+				
+            <div class="developer_right">
+                <div class="developer_right_title">
+					    <span class="developer_right_span">
+						API开放接口
+						</span>
+					</div>
+                    <div class="col-xs-11 devo_right_pa">
+                    <h4>设备接口</h4>
+                    <p>设备代表一组传感器的集合，设备分为开发设备和终端设备两种。</p>
+                    <div class="col-xs-12 devo_jiekou">
+                    <!------------------------创建设备--------------------------------------------->
+                    <div class="row createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse1">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/addDevices.htm</span>
+                        </div>
+                        <span class="pull-right">创建设备</span>
+                    </div>
+
+                    <!--创建设备的内容-->
+                    <div class="row">
+                        <div class="panel-collapse collapse  createdevice_post_cen" id="collapse1">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    创建设备传感器
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+    "sensorItem": [
+        {
+            "createDate": "创建时间",
+            "decimal": "小数位",
+            "deviceId": "设备Id",
+            "deviceName": "",
+            "sensorId": "传感器Id(新增时可不填)",
+            "iocUrl": "图标",
+            "isLine": "是否在线 '0' 否 '1' 是",
+            "isOpen": "是否公开 '0' 否 '1' 是",
+            "lastUpdateDate":"",
+            "sensorName": "传感器名称",
+            "sensorTypeId": "数据类型,取值范围'1'(数值型)'2'开关型'3'定位型'4'图片型",
+            "switcher": "档位",
+            "tag": "标签",
+            "unit": "单位,数据类型为1时必填项",
+            "field1":"0映射值(非必填)如果是档位型，组装json如：[{"field5":"0","field6":"东风"},{"field5":"1","field6":"南风"},{"field5":"2","field6":"西风"},{"field5":"3","field6":"北风"},{"field5":"4","field6":"东南"}]",
+            "field2":"1映射值(非必填)档位型留空",
+            "field3":"2映射值(非必填)档位型留空",
+            "field4":"3映射值(非必填)档位型留空"
+        }
+    ],
+    "deviceName": "设备名称",
+    "remark": "备注",
+    "userId": "1",
+    "defaultTime": "记录时间间隔",
+    "agreement": "协议",
+    "faultDelay": "掉线延时",
+    "isShare": "是否公开",
+    "userKey": "94040a9b-b3cb-4489-ad85-27ce619edb7b"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag":"00"(flag:00、成功  01、失败)
+"msg":"失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!---------------------------查询设备--------------------------------------------->
+                    <!-- <div class="col-xs-11 device_jiekou_t" data-toggle="collapse"
+            data-parent="#accordion" href="#collapsetwo">
+            <div class="pull-left">
+                <div class="device_jiekou_t_kk">POST</div>
+                http://api.tlink.io/tlink_interface/api/device/queryDevicesInfo.htm
+            </div>
+            <div class="pull-right">
+               查询设备
+            </div>
+        </div> -->
+
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse2">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/queryDevicesInfo.htm</span>
+                        </div>
+                        <span class="pull-right">查询设备传感器</span>
+                    </div>
+
+                    <!--创建设备的内容-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse2">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    查询设备和传感器
+                                </p>
+                                <!  Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"userId": "用户ID",
+"deviceId": "设备ID"
+}
+</pre>
+                                </div>
+
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+	"flag":"00",
+	"msg":"",
+	"device":{
+	"agreement":"设备协议",
+	"createDate":”增加时间”,
+	"defaultTimescale":"记录时间间隔",
+	"deviceName":"设备名称",
+	"deviceNo":"设备序列号",
+	"faultDelay":"掉线延时",
+	"id":”设备ID”,
+	"iocUrl":"设备图标",
+	"isDelete":”是否删除  0、否 1、是”,
+	"isShare":”是否公开 0、否 1、是”,
+	"lat":"纬度",
+	"lng":"经度",
+	"remark":"备注",
+	"sequence":”排序”,
+	"userId":”用户ID”,
+   "sensorsList":[
+	{
+		"createDate":”创建时间”,
+		"decimalPlacse":"小数点位数",
+		"defaultTimescale":"记录时间间隔",
+		"deviceId":”所属设备ID”,
+		"deviceName":"所属设备名称",
+		"id":”传感器ID”,
+		"iocUrl":"传感器图标",
+		"isDelete":”是否删除  0、否 1、是”,
+		"isLine":”是否在线  0、否 1、是”,
+		"isOpen":”是否公开 0、否 1、是”,
+		"lastUpdateDate":”最后更新时间”,
+		"sensorName":"传感器名称",
+		"sensorTypeId":”传感器类型ID”,
+		"switcher":"档位",
+		"tag":"",
+		"unit":"单位"
+	}          
+         ]
+    }
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!------------------------------更新设备传感器------------------------------------------>
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse3">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/updateDevices.htm</span>
+                        </div>
+                        <span class="pull-right">更新设备传感器</span>
+                    </div>
+
+                    <!--创建设备的内容-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse3">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    更新设备传感器
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+    "sensorItem": [
+        {
+            "createDate": "创建时间",
+            "decimal": "小数位",
+            "deviceId": "设备Id",
+            "deviceName": "",
+            "sensorId": "传感器Id(新增时可不填)",
+            "iocUrl": "图标",
+            "isLine": "是否在线 '0' 否 '1' 是",
+            "isOpen": "是否公开 '0' 否 '1' 是",
+            "lastUpdateDate":"",
+            "sensorName": "传感器名称",
+            "sensorTypeId": "数据类型,取值范围'1'(数值型)'2'开关型'3'定位型'4'图片型",
+            "switcher": "档位",
+            "tag": "标签",
+            "unit": "单位,数据类型为1时必填项",
+            "field1":"0映射值(非必填)如果是档位型，组装json如：[{"field5":"0","field6":"东风"},{"field5":"1","field6":"南风"},{"field5":"2","field6":"西风"},{"field5":"3","field6":"北风"},{"field5":"4","field6":"东南"}]",
+            "field2":"1映射值(非必填)档位型留空",
+            "field3":"2映射值(非必填)档位型留空",
+            "field4":"3映射值(非必填)档位型留空"
+        }
+    ],
+    "deviceId":"设备ID",
+    "deviceName": "设备名称",
+    "remark": "备注",
+    "userId": "用户Id",
+    "defaultTime": "记录时间间隔",
+    "agreement": "协议",
+    "faultDelay": "掉线延时",
+    "isShare": "是否公开",
+    "userKey": "94040a9b-b3cb-4489-ad85-27ce619edb7b"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+    "flag": "01", (flag:00、成功  01、失败)
+    "msg": "失败原因!"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!------------------------------查询设备监控数据------------------------------------------>
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse4">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/queryDevicesIndex.htm</span>
+                        </div>
+                        <span class="pull-right">查询设备监控数据</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse4">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    查询设备监控数据
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"userId": "用户ID",
+"deviceId": "设备ID"  //用户ID和设备ID必传其一
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+	"flag": "01", (flag:00、成功  01、没查到数据  02、必传字段为空)
+	"msg": "失败原因"
+	"deviceList":[
+	{
+		"createDateTime":"创建时间",
+		"defaultTimescale":"记录间隔时间",
+		"deviceId":"设备Id",
+		"deviceName":"设备名称",
+		"deviceNo":"设备序列号",
+		"faultDelay":"掉线延迟时间",
+		"deviceIoc":"设备图标",
+		"sensorList":[
+			{
+			"sensorId":"传感器ID",
+			"sensorName":"传感器名称",
+			"sensorType":"传感器类型",
+			"iocUrl":"传感器图标地址",
+			"isLine":"是否在线 0、否 1、是",
+			"lat":"纬度",
+			"lng":"经度",
+			"height":"高度",
+			"speed":"速度",
+			"switcher":"档位",
+			"value":"最新数值",
+			"unit":"单位",
+			"updateDateTime":"最后更新时间"
+			}
+		]
+	}
+	]
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!-----------------------------删除设备------------------------------------->
+                    <div class="row editdevice createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse5">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/delDevices.htm</span>
+                        </div>
+                        <span class="pull-right">删除设备</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse5">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    删除设备
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"userId": "用户ID",
+"deviceId": "设备ID"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "01", (flag:00、成功  01、失败)
+"msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!-----------------------------删除传感器------------------------------------->
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse6">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/delSensor.htm</span>
+                        </div>
+                        <span class="pull-right">删除传感器</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse6">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    删除传感器
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"userId": "用户ID",
+"sensorId": "传感器ID"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "01", (flag:00、成功  01、失败)
+"msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!-----------------------------查询用户设备---------------------------------->
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse7">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/queryUserDevices.htm</span>
+                        </div>
+                        <span class="pull-right">查询用户设备</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse7">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    查询用户设备
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+ "userId": "用户ID",
+ "apiKey": "28b123cs154545bbf59b46befe4725"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+    "flag": "00",
+    "devices": [
+        {
+            "agreement": "设备协议",
+            "createDate": "2015-05-14 00:00:00"(创建时间),
+            "defaultTimescale": "10",
+            "deviceName": "Test1111"(设备名称),
+            "deviceNo": "abcd1234534"(设备编号),
+            "faultDelay": "10",
+            "id": 10000(设备ID),
+            "isDelete": 0(是否删除 0 否 1 是),
+            "isShare": 1,
+            "lat": "纬度",
+            "lng": "经度",
+            "remark": "",
+            "sequence": 0,
+            "userId": 10000
+        }
+    ],
+    "msg": ""
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+
+                    <!----------------------------根据传感器ID查询传感器历史数据--------------------------------->
+                    <div class="row editdevice createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse9">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/querySensorDataById_bak.htm</span>
+                        </div>
+                        <span class="pull-right">根据传感器ID查询传感器历史数据（50次/天）</span>
+                    </div>
+
+                    <!--查询设备传感器-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse9">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    根据传感器ID查询传感器历史数据
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"userId": "用户ID",
+"sensorId": "传感器ID",
+"page": "页数",
+"pageSize":"每页显示的条数默认10条",
+"startDate": "开始时间，格式:yyyy-MM-dd HH:mm:ss",
+"endDate": "结束时间"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+	"flag":"00、查询成功  01、未查到相关数据 02、请求参数有误",
+	"msg":"",
+	"page":"当前页",
+	"totalPage":"总页数",
+	"pageSize":"每页显示条数",
+	"sumRows":"总条数"
+    "dataList":[
+	{
+		"sensorName":”传感器名称”,
+		"sensorTypeId":"传感器类型",
+		"deviceName":"设备名称",
+		"val":”数值”,
+		"lat":"纬度",
+		"lng":”经度”,
+		"height":"高度",
+		"speed":”速度”,
+		"switcher":”档位”,
+		"unit":”单位”,
+		"updateTime":”更新时间”
+	}          
+      ]
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!----------------------------根据传感器ID查询传感器历史曲线数据--------------------------------->
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse10">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/querySensorDataInfo.htm</span>
+                        </div>
+                        <span class="pull-right">根据传感器ID查询历史数据（50次/天）</span>
+                    </div>
+
+                    <!--查询设备传感器-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse10">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    根据传感器ID查询历史数据
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"userId": "用户ID",
+"sensorId": "传感器ID",
+"type" : "0为1小时  1为1天  2为一月",
+"startDate": "开始时间，格式:yyyy-MM-dd HH:mm:ss",
+"endDate": "结束时间",
+"m" : "1-12(月份,type为2时必填)"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+	"flag":"00、查询成功  01、未查到相关数据 02、请求参数有误",
+	"msg":"",
+    "dataList":[
+		{
+		"val":”数值”,
+		"switcher":”档位”,
+		"updateTime":”更新时间”
+		}          
+      ]
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!--------------------------添加传感器监控数据--------------------------------->
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse11">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/createDataPonit.htm</span>
+                        </div>
+                        <span class="pull-right">添加传感器数据</span>
+                    </div>
+
+                    <!--创建数据点 -->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse11">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    添加传感器数据
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+     "deviceNo":"Q4BW7484721N9U8U"(设备序列号),
+     "sensorDatas":[
+		   //数值型
+		{
+		    "sensorsId":1,
+		    "value":"10.0"
+		},
+		   //定位型
+		{
+		    "sensorsId":2,
+		    "lat":39.9,
+		    "lng":116.3 
+		},
+		  //开关型
+		{
+		    "sensorsId":3,
+		    "switcher":"1" 
+		},
+		  //图片型
+		{
+			"sensorsId":4,
+			"imgBinary":"图片二进制数据"
+		}  
+      ]
+ }
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+	"flag": "01",
+	"msg": "失败原因"
+}
+{
+	"flag": "00",
+	"msg": "成功"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!--------------------------查询设备传感器信息------------------------------->
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse12">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/getDeviceByNo</span>
+                        </div>
+                        <span class="pull-right">根据设备序列号查询设备传感器信息</span>
+                    </div>
+
+                    <!--创建数据点 -->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse12">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    根据设备序列号查询设备传感器信息
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+	"deviceNo": "CF2D016C063C889Z"(设备序列号)
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+成功：
+{
+    "deviceItems": [
+        {
+            "seneors_type": 1,
+            "device_no": "CF2D016C063C889Z",
+            "agreement": "[H:],[HE:],[DE[]|]",
+            "device_id": 1012,
+            "sensors_id": 10094
+        }
+    ],
+    "flag": "00",
+    "msg": ""
+}
+失败：
+{
+"flag": "01",
+"msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!----------------------------查询数据点------------------------------->
+                    <div class="row editdevice createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse24">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/datapoint.htm</span>
+                        </div>
+                        <span class="pull-right">查询最新的传感器监控数据</span>
+                    </div>
+
+                    <!--查询设备传感器-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse24">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    查询最新的传感器监控数据
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+	"deviceId": "12"(设备ID),
+	"sensorId": "34"(C传感器ID)
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+    "timestamp": "2015-06-23 10:36:00.0",
+    "flag": "00 表示返回成功 01表示失败",
+    "value": "数值",
+    "lat": "纬度", 
+    "lng": "经度", 
+    "switcher": "档位",
+    "sensorTypeId": "传感器类型",
+    "SensorID": "传感器ID"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    
+                     <!--根据设备序列号查询传感器最新一条监控数据-->
+                    <div class="row editdevice createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse100">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/queryDataPointByDeviceNo.htm</span>
+                        </div>
+                        <span class="pull-right"> 根据设备序列号查询传感器最新一条监控数据</span>
+                    </div>
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse100">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    根据设备序列号查询传感器最新一条监控数据
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+	"deviceNo": "WDV1DI6F2577C5R0"(设备序列号)
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+成功：
+{
+	"sensorLastDataList":[
+		{
+			"unit":"s",(单位)
+			"updateTime":"2016-12-20 09:15:32",(最新数据更新时间)
+			"sensorId":"100006",(传感器ID)
+			"value":"10.0",(数值型对应的值)
+			"sensorName":"数值1"(传感器名称)
+		},
+		{
+			"unit":"",
+			"switcher":"1",(开关型对应的值 0:关 1:开)
+			"updateTime":"2016-12-20 09:15:32",
+			"sensorId":"100007",
+			"sensorName":"开关"
+		},
+		{
+			"unit":"",
+			"updateTime":"2016-12-20 09:15:32",
+			"sensorId":"100682",
+			"lng":"116.31255208191",(定位型对应的经度)
+			"sensorName":"定位",
+			"lat":"39.907335915673"(定位型对应的纬度)
+		},
+		{
+			"unit":"w",
+			"updateTime":"",(传感器没最新数据时，时间为空)
+			"sensorId":"100684",
+			"sensorName":"数值2"
+		}
+	],
+	"flag":"00",(成功)
+	"deviceName":"yuhao",(设备名称)
+	"userId":"10395",(用户ID)
+	"msg":"查询成功！",
+	"deviceId":"3"(设备ID)
+}
+失败：
+{
+"flag": "01",
+"msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!----------------------------Get查询数据点------------------------------->
+                        <div class="row createdevice_get" data-toggle="collapse"
+                             data-parent="#accordion" href="#collapse240">
+                            <div class="col-xs-9 pd0">
+                                <h4 class="colorone">
+                                    GET
+                                </h4>
+                                <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/getDataPoint_传感器ID.htm</span>
+                            </div>
+                            <span class="pull-right">根据传感器ID查询最新一条监控数据</span>
+                        </div>
+
+                    <!--查询设备传感器-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_get_cen" id="collapse240">
+                            <section class="content-wrapper main-content clear-fix">
+
+                                <p class="explain">
+                                    根据传感器ID查询最新一条数据
+                                </p>
+                                <!--Request Information-->
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+传感器类型为数值型则返回:
+{
+    "timestamp": "2015-06-23 10:36:00.0",
+    "flag": "00 表示返回成功 01表示失败",
+    "value": "当前数值",
+}
+传感器类型为定位型则返回:
+{
+    "timestamp": "2015-06-23 10:36:00.0",
+    "flag": "00 表示返回成功 01表示失败",
+    "lat": "39.9", 纬度
+    "lng": "116.3", 经度
+}
+传感器类型为档位型则返回:
+{
+    "timestamp": "2015-06-23 10:36:00.0",
+    "flag": "00 表示返回成功 01表示失败",
+    "switcher": "当前档位",
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!--触发器接口-->
+                        <h4 id="api_2">触发器接口</h4>
+                    <!------------------------------新增触发器----------------------------------------->
+                    <div class="row editdevice createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse13">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/alarms/addAlarms.htm</span>
+                        </div>
+                        <span class="pull-right">新增触发器</span>
+                    </div>
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse13">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    新增触发器
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+	"userId":"3",
+	"isActive": "是否激活",
+	"contactId": "报警联系人",
+	"deviceId": "设备ID",
+	"sensorId": "传感器",
+	"alarmType": "报警类型("val_above"数值高于X,"val_below"数值低于Y,"val_above_below"数值高于X低于Y)",
+	"suedDeviceId" :"下发数据接收设备",
+	"isTransfer":"是否下发",
+	"datatype":"下发数据类型",
+	"linktype":"设备连接协议类型",
+	"upperBoundC": "警戒数值(高于)",
+	"lowerBoundC": "警戒数值(低于)",
+	"duration" :"超出时间限制时间段",
+	"message":"下发数据接收传感器Id",
+	"target": "报警通知方式",
+	"switchVal":"开关下发数据",
+	"userKey": "94040a9b-b3cb-4489-ad85-27ce619edb7b"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+    "flag": "01", (flag:00、成功  01、失败)
+    "msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!-----------------------------更新触发器------------------------------------->
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse14">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/alarms/updateAlarms.htm</span>
+                        </div>
+                        <span class="pull-right">更新触发器</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse14">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    更新触发器
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+	"alarmsId":"触发器ID",
+	"userId":"3",
+	"isActive": "是否激活",
+	"contactId": "报警联系人",
+	"deviceId": "设备ID",
+	"sensorId": "传感器",
+	"alarmType": "报警类型("val_above"数值高于X,"val_below"数值低于Y,"val_above_below"数值高于X低于Y)",
+	"suedDeviceId" :"下发数据接收设备",
+	"isTransfer":"是否下发",
+	"datatype":"下发数据类型",
+	"linktype":"设备连接协议类型",
+	"upperBoundC": "警戒数值(高于)",
+	"lowerBoundC": "警戒数值(低于)",
+	"duration" :"超出时间限制时间段",
+	"message":"下发数据接收传感器Id",
+	"target": "报警通知方式",
+	"switchVal":"开关下发数据",
+	"userKey": "94040a9b-b3cb-4489-ad85-27ce619edb7b"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "01", (flag:00、成功  01、失败)
+"msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!-----------------------------删除触发器------------------------------------->
+                    <div class="row editdevice createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse15">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/alarms/deleteAlarms.htm</span>
+                        </div>
+                        <span class="pull-right">删除触发器</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse15">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    删除触发器
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"alarmsId": "触发器ID",
+"userKey": "94040a9b-b3cb-4489-ad85-27ce619edb7b"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "01", (flag:00、成功  01、失败)
+"msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!-----------------------------查询触发器------------------------------------->
+                    <div class="row editdevice createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse16">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/alarms/queryAlarms.htm</span>
+                        </div>
+                        <span class="pull-right">查询触发器</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse16">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    查询触发器
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+	"alarmsId": "触发器Id(deviceId，userId，alarmsId 必须填写一项)",
+	"deviceId": "设备Id(deviceId，userId，alarmsId 必须填写一项)",
+	"userId": "用户Id(deviceId，userId，alarmsId 必须填写一项)",
+	"active": "连接状态 0 未连接 1 已连接(非必填)",
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+    "flag": "00",
+    "alarmItem": [
+        {
+            "targetMessage": "10588(下发数据接收传感器Id)",
+            "heightValue": "32(报警值高于)",
+            "belowValue": "报警值低于",
+            "alarmId": 440（触发器Id）,
+            "endTime": "1(下发数据类型“1字符串”，“2十六进制”)",
+            "targetModel": "WeiXin(报警通知方式)",
+            "contactsName": "(联系人名称)",
+            "contacts": (联系人Id),
+            "timeFarme": "2024(下发设备Id)",
+            "startTime": "0(是否下发 "0否"，“1是”)",
+            "switcher": "null",
+            "duration": "(时间限制M)",
+            "gear": "mqtt(下发设备协议)",
+            "deviceName": "MINI温湿度(设备名称)",
+            "sensorId": 10588(传感器Id),
+            "active": 1(是否激活“0否，1是”),
+            "alarmType": "val_above(报警器类型)",
+            "sensorName": "温度-1(传感器名称)",
+            "deviceId": 2024(设备Id),
+            "dayOfWeek": "1(开关下发数据)"
+        }
+    ],
+    "msg": ""
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!--用户接口-->
+                        <h4 id="api_3">用户接口</h4>
+                    <!------------------------------用户登录----------------------------------------->
+                    <div class="row createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse17">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/user/userLogin.htm</span>
+                        </div>
+                        <span class="pull-right">用户登录</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse17">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    用户登录
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+    "userName": "userName",
+    "password": "123456"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+返回参数：
+{
+"flag": "01", 
+"msg": "失败原因"
+}
+{
+"flag": "00",
+"msg": "登陆成功"
+"userKey": "api_key",
+"email": "email@qq.com",
+"nickName": "昵称",
+"userId": "用户ID",
+"userName": "用户名",
+"mobile": "135607458998"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!-----------------------------用户注册------------------------------------->
+                    <div class="row createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse18">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/user/userRegistration.htm</span>
+                        </div>
+                        <span class="pull-right">用户注册</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse18">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    用户注册
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"email": "email",
+"password": "123456",
+"code": "12a5e6"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "01", (flag:00、成功  01、失败)
+"msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <!---------------------------修改用户------------------------------------->
+                    <div class="row createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse19">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/user/updateUser.htm</span>
+                        </div>
+                        <span class="pull-right">修改用户</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse19">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    修改用户
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"email": "email",
+"userId": "userId",
+"userName": "userName",
+"weChat": "weChat",
+"password": "123456",
+"nikeName" : "昵称",
+"mobile": "mobile"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "01", (flag:00、成功  01、失败)
+"msg": "失败原因"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+
+                    <!-----------------------------用户邮箱和手机号码验证------------------------------------>
+                    <div class="row editdevice createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse20">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/user/checkMobileOrEmail.htm</span>
+                        </div>
+                        <span class="pull-right">用户邮箱和手机号码验证</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse20">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    用户邮箱和手机号码验证
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"userId": "userId", (注册验证可选参数，修改用户必填参数)
+"userKey": "94040a9b-b3cb-4489-ad85-27ce619edb7b",(注册验证可选参数，修改用户必填参数)
+"email": "email",(邮箱验证必填)
+"mobile": "mobile"(验证手机必填)
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "true", (flag:true 已存在，falsg:false 不存在)
+}
+</pre>
+                                </div>
+
+                            </section>
+                        </div>
+                    </div>
+
+
+
+                    <!-----------------------------获取注册验证码----------------------------------->
+                    <div class="row editdevice createdevice_post " data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse21">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/user/getEmailCode.htm</span>
+                        </div>
+                        <span class="pull-right">获取注册验证码</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse21">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    获取注册验证码
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+    "email": "email",
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "01", 
+"msg": "失败原因"
+}
+{
+"flag": "00", 
+ "msg": "获取验证码成功，10分钟内有效！"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+
+                    <!-----------------------------修改用户密码----------------------------------->
+                    <div class="row createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse22">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/user/updatePassword.htm</span>
+                        </div>
+                        <span class="pull-right">修改用户密码</span>
+                    </div>
+
+                    <!--查询设备监控数据-->
+                    <div class="row ">
+                        <div class="panel-collapse collapse createdevice_post_cen" id="collapse22">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    修改用户密码
+                                </p>
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"userName": "12", 
+"oldPassword": "老密码", 
+"password": "新密码"
+ }
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+"flag": "01",
+"msg": "失败原因"
+}
+{
+"flag": "00",
+"msg": "修改用户密码成功"
+"userKey": "api_key",
+"email": "email@qq.com",
+"nickName": "nickName",
+"userId": "123456",
+"userName": "userName",
+"mobile": "135607458998"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+
+					<div class="row createdevice_post" data-toggle="collapse"
+        data-parent="#accordion" href="#collapse28">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/device/sendSwitchValue.htm
+</span>
+                        </div>
+                            <span class="pull-right">http控制下行数据</span>
+                    </div>
+<div class="row">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse28">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+"deviceNo":"设备序列号",
+"sensorId":"传感器ID",
+"userKey" : "用戶key",
+"value":"下发内容 开关型0或者1"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+   "flag": "00",
+   "msg": "操作成功!"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    
+
+                    <!-----------------------------联系人查询----------------------------------->
+                    <div class="row createdevice_post" data-toggle="collapse"
+                         data-parent="#accordion" href="#collapse23">
+                        <div class="pull-left post_de">
+                            <h4 class="colorone">
+                                POST
+                            </h4>
+                            <span class="url_edit">http://api.tlink.io/tlink_interface/api/user/queryUserContacts.htm</span>
+                        </div>
+                            <span class="pull-right">联系人查询</span>
+                    </div>
+
+
+
+
+                    <!--查询设备监控数据-->
+                    <div class="row">
+                        <div class="panel-collapse collapse createdevice_post_cen"
+                             id="collapse23">
+                            <section class="content-wrapper main-content clear-fix">
+                                <p class="explain">
+                                    联系人查询
+                                </p>
+                                <!--Request Information-->
+                                <h4 class="device">
+                                    请求信息
+                                </h4>
+                                <h4 class="number">
+                                    POST数据
+                                </h4>
+                                <div class="sample-content">
+                                    <pre class="wrapped"> 
+{
+ "userId": "12",
+ "apiKey": "28b123cs154545bbf59b46befe4725"
+}
+</pre>
+                                </div>
+                                <!--------------Request Information------------->
+                                <h4 class="reback">
+                                    返回值
+                                </h4>
+                                <h5 class="number">
+                                    JSON
+                                </h5>
+                                <div class="sample-content">
+                                    <pre class="wrapped">
+{
+   "flag": "00",
+   "contactList": [
+       {
+           "email": "lyong@163.com",
+           "id": 10000,
+           "isdelete": 0,
+           "mobile": "135607458569",
+           "name": "test",
+           "userid": 10000,
+           "wechat": "lyongchang118"
+       }
+   ],
+   "msg": "操作成功!"
+}
+</pre>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-xs-12 pd0" id="api_4">
+                       <h4>http在线测试</h4>
+                        <div class="col-xs-12">
+                            <div class="col-xs-2 http_font_three_de">
+                                请求地址：
+                            </div>
+                            <div class="col-xs-6"><input name="requestUrl" id="requestUrl" style="width:700px" /></div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="col-xs-2 http_font_three_de">
+                                请求方式：
+                            </div>
+                            <div style="width:90px;" class="col-xs-1">
+                                <input type="radio" value="1" name="requestType" checked="checked">&nbsp;post
+                            </div>
+                            <div style="width:90px;" class="col-xs-1">
+                                <input type="radio" value="2" name="requestType" />&nbsp;get
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="col-xs-2 http_font_three_de">
+                                <span style="margin-top:-100px;">请求参数：</span>
+                            </div>
+                            <div class="col-xs-6">
+                                <textarea rows="10" cols="50" name="content" id="content"></textarea>
+                            </div>
+
+                            <div style="margin-bottom:20px;" class="col-xs-12 userFeed_btn_de">
+                                <button type="submit" class="btn http_font_six_de" onclick="httpTest();">提交</button>
+                            </div>
+                        </div>
+                        <div class="col-xs-12" id="responseMsgDiv" style="display: none;">
+                            <div class="col-xs-2">
+                                返回结果：
+                            </div>
+                            <div class="col-xs-" id="responseMsg">
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+		<script type="text/javascript">
+        function onLocationClick(id) { 
+       		window.location.hash = "#api_"+id;   
+    	} 
+    	function httpTest(){
+    	    $("#responseMsg").html("");
+    		var requestType = $('input[name="requestType"]:checked').val();
+    		var content = $("#content").val();
+    		var requestUrl = $("#requestUrl").val();
+			$.ajax({
+   					type:"post",
+  					url:"/help/httpTest.htm",
+  					data:{
+  						requestType:requestType,
+  						content:content,
+  						requestUrl:requestUrl
+  					},
+   					success:function(data){
+   						$("#responseMsgDiv").show();
+   						$("#responseMsg").html('<pre>'+data+'</pre>');
+   					}
+   			});
+		}
+	    $(document).ready(function(){
+	       $("#collapselefttwo_222").attr("class","panel-heading-one");
+	       $("#collapselefttwo_222").attr("aria-expanded","true");
+	  });
+    </script>
+	</body>
+</html>
